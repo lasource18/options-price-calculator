@@ -17,7 +17,7 @@ def main():
         strike = pyip.inputFloat(prompt='Enter the strike price: ', min=0.5)
         exp = pyip.inputInt(prompt='Enter the number of days to expiry: ', min=1)
         rf_rate = pyip.inputFloat(prompt='Enter the risk free rate: ', min=0.0)
-        vol = pyip.inputInt(prompt='Enter the volatility: ', min=1)
+        vol = pyip.inputFloat(prompt='Enter the volatility: ', min=0.5)
         div = pyip.inputFloat(prompt='Enter the dividend yield: ', min=0.0, default=0.0)
 
         # Create the option object

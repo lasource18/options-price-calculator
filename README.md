@@ -12,9 +12,13 @@ It also returns the calculated option's Greek (delta, gamma, theta, vega and rho
 
 The main script collects and validates (using the input validation functions of the PyInputPlus class) user's input and returns the above function's output in an easy to read format. It also indicates whether or not the option is over/under-valued according to the Black-Scholes model.
 
-**Sample output**
+**Sample output #1**
 
-![Sample](sample_output.png)
+![Sample_1](sample_output_1.png)
+
+**Sample output #2**
+
+![Sample_2](sample_output_2.png)
 
 ### How to install the required modules
 
@@ -24,6 +28,9 @@ pip install -r requirements.txt
 ```
 ### Next Steps (subject to change)
 
+* Allow the user to enter a ticker and return the desired output directly
+    * Use Yahoo Finance API to pull the data
+* Calcultate and display the implied volatility of the contract
 * Refactor the code to convert the console app to a web app using Flask 
 * Add HTML to improve user experience
 * Deploy the app using Google App Engine
