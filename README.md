@@ -13,7 +13,7 @@ It also returns the calculated option's Greek (delta, gamma, theta, vega and rho
 The main script collect and validates (using input validation functions of the PyInputPlus class) user's input and returns the above function's output in a nice format. It also indicate whether or not the option is over/under-valued.
 
 **Sample output**
-![Sample Output] (sample_output.png)
+![Sample_Output] (sample_output.png)
 
 ### How to install the required modules
 
