@@ -56,7 +56,7 @@ class Options:
         Returns the option's theoritical price, intrinsic value and time value
         and the greeks of the option as a dictionary.
         """
-        d1 = ((np.log(self.stock_price/self.strike) + (self.rf_rate - self.div + (self.vol**2)/2)))/(self.vol * np.sqrt(self.exp))
+        d1 = (np.log(self.stock_price/self.strike) + (self.rf_rate - self.div + (pow(self.vol,2))/2))/(self.vol * np.sqrt(self.exp))
         d2 = d1 - self.vol * np.sqrt(self.exp)
 
         A = self.stock_price * np.exp(-self.div * self.exp)
@@ -90,7 +90,7 @@ class Options:
             rho = (self.strike * self.exp * np.exp(-self.rf_rate*self.exp) * N_d2) / 100
 
         else:
-            delta = N_d1 * np.exp(-self.div * self.exp)
+            delta = (N_d1 - 1) * np.exp(-self.div * self.exp)
             theta = (-(((self.stock_price * self.vol)/(2*np.sqrt(self.exp))) * ((np.exp(-pow(d1, 2)/2))/(2*np.pi) ))
                      - (self.rf_rate*self.strike*np.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * np.exp(-self.div*self.exp) * N_d1)) / 252
             rho = -(self.strike * self.exp * np.exp(-self.rf_rate*self.exp) * N_d2) / 100
