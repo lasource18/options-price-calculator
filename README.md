@@ -10,10 +10,11 @@ This class contains a single function used to determine the theoritical price of
 
 It also returns the calculated option's Greek (delta, gamma, theta, vega and rho).
 
-The main script collect and validates (using input validation functions of the PyInputPlus class) user's input and returns the above function's output in a nice format. It also indicate whether or not the option is over/under-valued.
+The main script collects and validates (using the input validation functions of the PyInputPlus class) user's input and returns the above function's output in an easy to read format. It also indicates whether or not the option is over/under-valued according to the Black-Scholes model.
 
 **Sample output**
-![Sample Output] (sample_output.png)
+
+![Sample](sample_output.png)
 
 ### How to install the required modules
 
