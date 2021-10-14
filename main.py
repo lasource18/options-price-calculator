@@ -31,16 +31,16 @@ def main():
         formatted_output(price)
 
         # Calculate the price difference between observed price and theoritical price
-        price_diff = (price['value']['Option Price'] - option.market_price) / 100
+        price_diff = (price['value']['Option Price'] - option.market_price) / option.market_price
 
         if price_diff > 0:
-            print(f'The option is undervalued by {price_diff: .2%}.')
+            print(f'The option is undervalued by {price_diff:.2%}.')
 
         elif(price_diff == 0):
             print(f'The option is fairly valued.')
 
         else:
-            print(f'The option is overvalued by {price_diff: .2%}.')
+            print(f'The option is overvalued by {price_diff:.2%}.')
 
         loop = pyip.inputChoice(['y', 'n'], prompt="\nWould you like to get the price of another contract [y/n]? ", default='n')
 
