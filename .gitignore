@@ -1,5 +1,5 @@
 .DS_Store
 options/test.py
-__pycache__
-.gcloudignore
+options/__pycache__
 venv
+.gcloudignore

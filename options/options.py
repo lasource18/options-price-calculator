@@ -31,8 +31,8 @@ class Options:
         rf_rate (float): Risk-free rate 
         vol (float): Volatility 
         """
-        self.market_price = market_price
         self.contract_type = contract_type
+        self.market_price = market_price
         self.stock_price = stock_price
         self.strike = strike
         self.exp = exp / 252
@@ -62,16 +62,15 @@ class Options:
         A = self.stock_price * np.exp(-self.div * self.exp)
         B = self.strike * np.exp(-self.rf_rate * self.exp)
         
-        self.contract_type = self.contract_type.upper()
-        # If contract_type = 'c' or 'C' calculate the price of a call
-        if self.contract_type == 'C':
+        # If contract_type = 'call' calculate the price of a call
+        if self.contract_type.lower() == 'call':
             N_d1 = ndtr(d1)
             N_d2 = ndtr(d2)
             option_price = A * N_d1 - B * N_d2
             intrinsic_val = max(self.stock_price - self.strike, 0)
 
-        # If contract_type = 'p' or 'P' calculate the price of a put
-        elif self.contract_type == 'P':
+        # If contract_type = 'put' calculate the price of a put
+        elif self.contract_type.lower() == 'put':
              N_d1 = ndtr(-d1)
              N_d2 = ndtr(-d2)
              option_price = B * N_d2 - A * N_d1
@@ -83,7 +82,7 @@ class Options:
 
         # Calculate the greeks
         
-        if self.contract_type == 'C':
+        if self.contract_type == 'call':
             delta = N_d1 * np.exp(-self.div * self.exp)
             theta = (-(((self.stock_price * self.vol * np.exp(-self.div*self.exp))/(2*np.sqrt(self.exp))) * ((np.exp(-pow(d1, 2)/2))/(2*np.pi) ))
                      - (self.rf_rate*self.strike*np.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * np.exp(-self.div*self.exp) * N_d1)) / 252
