@@ -78,12 +78,12 @@ def index():
                 <div class="jumbotron">
                     <h1 class="text-center" id="home">Option Price Calculator</h1>
                 </div>
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6 offset-md-3 col-sm-12">
                             <form action="" method="get">
                                 <div class="form-group">
-                                    <p>Contract Type</p>
+                                    <span style="display: block;">Contract Type</span>
                                     <input type="radio" name="contract_type" id="call" value="call" checked required>
                                     <label for="call">Call</label>
                                     <input type="radio" name="contract_type" id="put" value="put">
@@ -120,19 +120,24 @@ def index():
                                 <br>
                                 <input type="submit" class="btn btn-primary btn-block" name="submit-form" value="Calculate">
                             </form>
-                        </div>
-                        <div>
-                            <p>Option Price: """ + opt_price + """</p>
-                            <p>Intrinsic Value: """ + intrinsic_value + """</p>
-                            <p>Time Value: """ + time_value + """</p>
                             <br>
-                            <p>Delta: """ + delta + """</p>
-                            <p>Gamma: """ + gamma + """</p>
-                            <p>Vega: """ + vega + """</p>
-                            <p>Theta: """ + theta + """</p>
-                            <p>Rho: """ + rho + """</p>
-                            <br>
-                            <p>""" + difference + """</p>
+                            <div>
+                                <h3>Result</h3>
+                                <h5>Price Breakdown</h5>
+                                <p>Option Price: """ + opt_price + """</p>
+                                <p>Intrinsic Value: """ + intrinsic_value + """</p>
+                                <p>Time Value: """ + time_value + """</p>
+                                <br>
+                                <h5>Greeks</h5>
+                                <p>Delta: """ + delta + """</p>
+                                <p>Gamma: """ + gamma + """</p>
+                                <p>Vega: """ + vega + """</p>
+                                <p>Theta: """ + theta + """</p>
+                                <p>Rho: """ + rho + """</p>
+                                <br>
+                                <h5>Valuation</h5>
+                                <p>""" + difference + """</p>
+                            </div>
                         </div>
                     </div>
                 </div>
