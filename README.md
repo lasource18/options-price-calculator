@@ -28,12 +28,12 @@ pip install -r requirements.txt
 ```
 ### Next Steps (subject to change)
 
-* Allow the user to enter a ticker and return the desired output directly
-    * Use Yahoo Finance API to pull the data
-* Calcultate and display the implied volatility of the contract
-* Refactor the code to convert the console app to a Flask web app 
-* Add HTML to improve user experience
-* Deploy the app using Google App Engine
+* ~~Allow the user to enter a ticker and return the desired output directly~~
+    * ~~Use Yahoo Finance API to pull the data~~
+* ~~Calcultate and display the implied volatility of the contract~~
+* [x] Refactor the code to convert the console app to a Flask web app 
+* [x] Add HTML to improve user experience
+* [x] Deploy the app using Google App Engine 
 
 *Inspired from: https://github.com/hashABCD/opstrat*
 
