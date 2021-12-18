@@ -39,13 +39,13 @@ def index():
         rho = str(round(price['greeks']['Rho'], 4))
 
         if price_diff > 0:
-            difference = f'The option is undervalued by {price_diff:.2%}.'
+            difference = f'The option is undervalued by {abs(price_diff):.2%}.'
 
-        elif(price_diff == 0):
+        elif price_diff == 0:
             difference = f'The option is fairly valued.'
 
         else:
-            difference = f'The option is overvalued by {price_diff:.2%}.'
+            difference = f'The option is overvalued by {abs(price_diff):.2%}.'
 
     else:
         price, price_diff = '', ''
