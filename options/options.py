@@ -12,7 +12,7 @@ class Options:
     This class models a vanilla European option contract.
     It provides a method called option_price() to calculate the theoritical price of the contract.
     The calculation of the contract's price relies on the Blach-Scholes framework
-    to value an European option contract on a dividend paying stock.
+    to value an European option contract on a dividend/non-dividend paying stock.
 
     Useful links
     ------------
@@ -30,6 +30,7 @@ class Options:
         exp (int): Time to expiration in days 
         rf_rate (float): Risk-free rate 
         vol (float): Volatility 
+        div (float): Dividend Yield
         """
         self.contract_type = contract_type
         self.market_price = market_price
@@ -44,10 +45,9 @@ class Options:
         """
         This method as the name suggests is used calculate the price of an option.
         The formula used will depend on the type of contract. That is:
-        - Call: S*e^(-qt)*N(d1) - Ke(-rt)N(d2)
-        - Put: Ke(-rt)N(-d2) - S*e^(-qt)*N(-d1)
-        This method also calculate the options' greeks (delta, gamma, theta, rho)
-        and the implied volatility.
+        - Call: Se^(-qt)*N(d1) - Ke(-rt)*N(d2)
+        - Put: Ke(-rt)*N(-d2) - Se^(-qt)*N(-d1)
+        This method also calculate the options' greeks (delta, gamma, theta, rho).
         
         Parameters
         ----------
@@ -81,7 +81,6 @@ class Options:
         value = {'Option Price': option_price, 'Intrinsic Value': intrinsic_val, 'Time Value': time_val}
 
         # Calculate the greeks
-        
         if self.contract_type == 'call':
             delta = N_d1 * np.exp(-self.div * self.exp)
             theta = (-(((self.stock_price * self.vol * np.exp(-self.div*self.exp))/(2*np.sqrt(self.exp))) * ((np.exp(-pow(d1, 2)/2))/(2*np.pi) ))

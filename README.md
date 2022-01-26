@@ -4,7 +4,7 @@ This a simple web application allowing the user to quickly obtain the price of a
 
 ## Project details
 
-The source code is contained in the options.py file. It contains the class definition used to model European option contracts. The design choice of implementing the code using a class was made with the motive of using object-oriented design in a real-world setting.
+The source code is contained in the options.py file. It contains the class definition used to model European option contracts. The design choice of implementing the code using a class was made with the motive of using an object-oriented design in a real-world setting.
 
 This class contains a single function used to determine the theoritical price of the option, its intrinsic value and its time value using the Black-Scholes formula.
 

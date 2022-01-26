@@ -150,7 +150,7 @@ def pricing(contract_type, market_price, stock_price, strike, exp, rf_rate, vol,
     # Create the option object
     option = Options(contract_type, market_price, stock_price, strike, exp, rf_rate, vol, div)
 
-    # Calculate price
+    # Calculate option's price
     price = option.option_price()
 
     # Calculate the price difference between observed price and theoritical price
