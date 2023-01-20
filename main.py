@@ -12,14 +12,14 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        contract_type = float(request.form['contract_type'])
+        contract_type = request.form['contract_type']
         market_price = float(request.form['market_price'])
         stock_price = float(request.form['stock_price'])
         strike = float(request.form['strike'])
-        exp = int(request.args.form['exp'])
-        rf_rate = float(request.args.form['rf_rate'])
-        vol = float(request.args.form['vol', ''])
-        div = float(request.args.form['div'])
+        exp = int(request.form['exp'])
+        rf_rate = float(request.form['rf_rate'])
+        vol = float(request.form['vol'])
+        div = float(request.form['div'])
 
         price, price_diff = pricing(contract_type, market_price, stock_price, strike, exp, rf_rate, vol, div)
 

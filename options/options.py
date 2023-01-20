@@ -4,7 +4,7 @@
 # Date: 2021-10-12
 #
 
-import numpy as np
+import math
 from scipy.special import ndtr
 
 class Options:
@@ -45,8 +45,8 @@ class Options:
         """
         This method as the name suggests is used calculate the price of an option.
         The formula used will depend on the type of contract. That is:
-        - Call: Se^(-qt)*N(d1) - Ke(-rt)*N(d2)
-        - Put: Ke(-rt)*N(-d2) - Se^(-qt)*N(-d1)
+        - Call: Se^(-qt)*N(d1) - Ke^(-rt)*N(d2)
+        - Put: Ke^(-rt)*N(-d2) - Se^(-qt)*N(-d1)
         This method also calculate the options' greeks (delta, gamma, theta, rho).
         
         Parameters
@@ -56,11 +56,11 @@ class Options:
         Returns the option's theoritical price, intrinsic value and time value
         and the greeks of the option as a dictionary.
         """
-        d1 = (np.log(self.stock_price/self.strike) + (self.rf_rate - self.div + (pow(self.vol,2))/2))/(self.vol * np.sqrt(self.exp))
-        d2 = d1 - self.vol * np.sqrt(self.exp)
+        d1 = (math.log(self.stock_price/self.strike) + (self.rf_rate - self.div + (pow(self.vol,2))/2))/(self.vol * math.sqrt(self.exp))
+        d2 = d1 - self.vol * math.sqrt(self.exp)
 
-        A = self.stock_price * np.exp(-self.div * self.exp)
-        B = self.strike * np.exp(-self.rf_rate * self.exp)
+        A = self.stock_price * math.exp(-self.div * self.exp)
+        B = self.strike * math.exp(-self.rf_rate * self.exp)
         
         # If contract_type = 'call' calculate the price of a call
         if self.contract_type.lower() == 'call':
@@ -82,19 +82,19 @@ class Options:
 
         # Calculate the greeks
         if self.contract_type == 'call':
-            delta = N_d1 * np.exp(-self.div * self.exp)
-            theta = (-(((self.stock_price * self.vol * np.exp(-self.div*self.exp))/(2*np.sqrt(self.exp))) * ((np.exp(-pow(d1, 2)/2))/(2*np.pi) ))
-                     - (self.rf_rate*self.strike*np.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * np.exp(-self.div*self.exp) * N_d1)) / 252
-            rho = (self.strike * self.exp * np.exp(-self.rf_rate*self.exp) * N_d2) / 100
+            delta = N_d1 * math.exp(-self.div * self.exp)
+            theta = (-(((self.stock_price * self.vol * math.exp(-self.div*self.exp))/(2*math.sqrt(self.exp))) * ((math.exp(-pow(d1, 2)/2))/(2*math.pi) ))
+                     - (self.rf_rate*self.strike*math.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * math.exp(-self.div*self.exp) * N_d1)) / 252
+            rho = (self.strike * self.exp * math.exp(-self.rf_rate*self.exp) * N_d2) / 100
 
         else:
-            delta = (N_d1 - 1) * np.exp(-self.div * self.exp)
-            theta = (-(((self.stock_price * self.vol)/(2*np.sqrt(self.exp))) * ((np.exp(-pow(d1, 2)/2))/(2*np.pi) ))
-                     - (self.rf_rate*self.strike*np.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * np.exp(-self.div*self.exp) * N_d1)) / 252
-            rho = -(self.strike * self.exp * np.exp(-self.rf_rate*self.exp) * N_d2) / 100
+            delta = (N_d1 - 1) * math.exp(-self.div * self.exp)
+            theta = (-(((self.stock_price * self.vol)/(2*math.sqrt(self.exp))) * ((math.exp(-pow(d1, 2)/2))/(2*math.pi) ))
+                     - (self.rf_rate*self.strike*math.exp(-self.exp*self.rf_rate) * N_d2 + self.stock_price * math.exp(-self.div*self.exp) * N_d1)) / 252
+            rho = -(self.strike * self.exp * math.exp(-self.rf_rate*self.exp) * N_d2) / 100
 
-        gamma = (np.exp(-self.div*self.exp) / self.stock_price*self.vol) * (1 / np.sqrt(2*np.pi) * np.exp(-pow(d1,2)/2))
-        vega = (1 / 100 * (self.stock_price*np.exp(-self.div*self.exp)*np.sqrt(self.exp))) * (1 / np.sqrt(2*np.pi) * np.exp(-pow(d1,2)/2))
+        gamma = (math.exp(-self.div*self.exp) / self.stock_price*self.vol) * (1 / math.sqrt(2*math.pi) * math.exp(-pow(d1,2)/2))
+        vega = (1 / 100 * (self.stock_price*math.exp(-self.div*self.exp)*math.sqrt(self.exp))) * (1 / math.sqrt(2*math.pi) * math.exp(-pow(d1,2)/2))
 
         greeks = {'Delta': delta, 'Gamma': gamma, 'Theta': theta, 'Vega': vega, 'Rho': rho}
 
