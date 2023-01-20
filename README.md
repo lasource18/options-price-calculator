@@ -12,16 +12,13 @@ It also returns the calculated option's Greeks (delta, gamma, theta, vega and rh
 
 The main script generates a minimal interface to collect and validate (using regex pattern matching) user's input and returns a breakdown of the option's price along with its Greeks. It also indicates whether or not the option is over/under-valued according to the Black-Scholes model.
 
-Website: https://options-price-calculator.ue.r.appspot.com
+Website: http://cguinan.pythonanywhere.com/
 
 ### Next Steps (subject to change)
 
-* ~~Allow the user to enter a ticker and return the desired output directly~~
-    * ~~Use Yahoo Finance API to pull the data~~
-* ~~Calcultate and display the implied volatility of the contract~~
 * [x] Refactor the code to convert the console app to a Flask web app 
 * [x] Add HTML to improve user experience
-* [x] Deploy the app using Google App Engine 
+* [x] Deploy the app 
 
 *Inspired from: https://github.com/hashABCD/opstrat*
 
