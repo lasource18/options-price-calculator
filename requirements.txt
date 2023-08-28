@@ -29,4 +29,3 @@ tzdata==2023.3
 urllib3==2.0.4
 webencodings==0.5.1
 Werkzeug==2.0.2
-yfinance==0.2.28
