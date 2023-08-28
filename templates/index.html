@@ -98,9 +98,7 @@
                     <h5>Valuation</h5>
                     <p>{{ difference }}</p>
                 </div>
-                <div class="col-md-6 offset-md-3 col-sm-12" id="charts">
-                  <h5>Graphs</h5>
-                </div>
+                <h5>Graphs</h5>
             </div>
         </div>
       </div>
@@ -115,6 +113,8 @@
         const main = document.getElementById('main')
 
         const charting = (greeks, strikes, main) => {
+          const div = document.createElement('div')
+          div.classList.add('row')
           let counter = 0
           for (const key in greeks) {
             if (key !== 'Strike') {
@@ -134,10 +134,6 @@
                   data: data,
                   options: { maitainAspectRatio: false }
               }
-
-              const div = document.createElement('div')
-              const classes = 'col-md-6 offset-md-3 col-sm-12'.split(' ')
-              div.classList.add(...classes)
               const canvas = document.createElement('canvas')
               canvas.id = key
               const chart = new Chart(
@@ -146,10 +142,7 @@
               )
 
               div.appendChild(canvas)
-              main.appendChild(canvas)
-
-              if(counter % 3 == 0)
-                div.classList.add('w-100')
+              main.appendChild(div)
             }
           }
         }
