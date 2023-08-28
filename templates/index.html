@@ -1,105 +1,160 @@
 <!DOCTYPE html>
-	<html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-            <title>{{ title }}</title>
-        </head>
-        <body>
-            <div class="jumbotron">
-                <h1 class="text-center" id="home">{{ title }}</h1>
-            </div>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-6 offset-md-3 col-sm-12">
-                        <form action="/" method="post" class="validate-form" id="form" novalidate>
-                            <div class="form-group">
-                                <span style="display: block;">Contract Type</span>
-                                <input type="radio" name="contract_type" id="call" value="call" checked required>
-                                <label for="call">Call</label>
-                                <input type="radio" name="contract_type" id="put" value="put">
-                                <label for="put">Put</label>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="market_price">Market Price (#)</label>
-                                <input type="text" class="form-control" name="market_price" id="market_price" pattern="\\d+\\.?\\d*" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="stock_price">Stock Price (#)</label>
-                                <input type="text" class="form-control" name="stock_price" id="stock_price" pattern="\\d+\\.?\\d*" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="strike">Strike (#)</label>
-                                <input type="text" class="form-control" name="strike" id="strike" pattern="\\d+\\.?\\d*" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="exp">Days to Expiry (#)</label>
-                                <input type="text" class="form-control" name="exp" id="exp" pattern="\\d+" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="rf_rate">Risk-free Rate (%)</label>
-                                <input type="text" class="form-control" name="rf_rate" id="rf_rate" pattern="\\d+\\.?\\d*" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="vol">Volatility (%)</label>
-                                <input type="text" class="form-control" name="vol" id="vol" pattern="\\d+\\.?\\d*" required>
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="div">Dividend Yield (%)</label>
-                                <input type="text" class="form-control" name="div" id="div" pattern="\\d+\\.?\\d*" value="0">
-                                <div class="valid-feedback">
-                            		Looks Good!
-                        		</div>
-                            </div>
-                            <br>
-                            <input type="submit" class="btn btn-primary btn-block" name="submit" value="Calculate">
-                        </form>
-                        <br>
-                        <div id="results">
-                            <h3>Result</h3>
-                            <h5>Price Breakdown</h5>
-                            <p>Option Price: {{ opt_price }}</p>
-                            <p>Intrinsic Value: {{ intrinsic_value }}</p>
-                            <p>Time Value: {{ time_value }}</p>
-                            <br>
-                            <h5>Greeks</h5>
-                            <p>Delta: {{ delta }}</p>
-                            <p>Gamma: {{ gamma }}</p>
-                            <p>Vega: {{ vega }}</p>
-                            <p>Theta: {{ theta }}</p>
-                            <p>Rho: {{ rho }}</p>
-                            <br>
-                            <h5>Valuation</h5>
-                            <p>{{ difference }}</p>
-                        </div>
+<html lang="en">
+    <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <title>Option Price Calculator</title>
+    </head>
+    <body>
+      <div class="jumbotron">
+          <h1 class="text-center" id="home">Option Price Calculator</h1>
+      </div>
+      <div class="container-fluid" id="main">
+        <div class="row">
+          <div class="col-md-6 offset-md-3 col-sm-12">
+                <form action="/" method="post" class="validate-form" id="form" novalidate>
+                    <div class="form-group">
+                      <label for="market_price">Market Price (#)</label>
+                      <input type="text" class="form-control" name="market_price" id="market_price" pattern="\\d+\\.?\\d*" required>
+                      <div class="valid-feedback">
+                      Looks Good!
                     </div>
+                    <div class="form-group">
+                        <span style="display: block;">Contract Type</span>
+                        <input type="radio" name="contract_type" id="call" value="C" checked required>
+                        <label for="call">Call</label>
+                        <input type="radio" name="contract_type" id="put" value="P">
+                        <label for="put">Put</label>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock_price">Stock Price (#)</label>
+                        <input type="text" class="form-control" name="stock_price" id="stock_price" pattern="\\d+\\.?\\d*" required>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="strike">Strike (#)</label>
+                        <input type="text" class="form-control" name="strike" id="strike" pattern="\\d+\\.?\\d*" required>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exp">Expiry (Date)</label>
+                        <input type="date" class="form-control" name="exp" id="exp" min="javascript: new Date()" max="javascript: new Date() + 260" required>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rf_rate">Risk-free Rate (%)</label>
+                        <input type="text" class="form-control" name="rf_rate" id="rf_rate" pattern="\\d+\\.?\\d*" required>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vol">Volatility (%)</label>
+                        <input type="text" class="form-control" name="vol" id="vol" pattern="\\d+\\.?\\d*" required>
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="div">Dividend Yield (%)</label>
+                        <input type="text" class="form-control" name="div" id="div" pattern="\\d+\\.?\\d*" value="0">
+                        <div class="valid-feedback">
+                        Looks Good!
+                    </div>
+                    </div>
+                    <br>
+                    <input type="submit" class="btn btn-primary btn-block" name="submit" value="Calculate">
+                </form>
+                <br>
+                <div id="results">
+                    <h3>Results</h3>
+                    <h5>Price Breakdown</h5>
+                    <p>Option Price: {{ opt_price }}</p>
+                    <p>Market Price: {{ market_price }}</p>
+                    <p>Intrinsic Value: {{ intrinsic_value }}</p>
+                    <p>Time Value: {{ time_value }}</p>
+                    <br>
+                    <h5>Greeks</h5>
+                    <p>Delta: {{ delta }}</p>
+                    <p>Gamma: {{ gamma }}</p>
+                    <p>Vega: {{ vega }}</p>
+                    <p>Theta: {{ theta }}</p>
+                    <p>Rho: {{ rho }}</p>
+                    <p>Dividend Sesitivity: {{ div_sens }}</p>
+                    <br>
+                    <h5>Valuation</h5>
+                    <p>{{ difference }}</p>
+                </div>
+                <div class="col-md-6 offset-md-3 col-sm-12" id="charts">
+                  <h5>Graphs</h5>
                 </div>
             </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-            <script src="{{ url_for('static', filename='js/validateForm.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/appendResults.js') }}"></script>
-        </body>
-	</html>
+        </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script src="{{ url_for('static', filename='js/validateForm.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/appendResults.js') }}"></script>
+      <script>
+        let greeks = '{{ data }}'
+        greeks = greeks.replaceAll('&#39;', '\"')
+        greeks = JSON.parse(greeks)
+        const strikes = greeks['Strike']
+        const main = document.getElementById('main')
+
+        const charting = (greeks, strikes, main) => {
+          let counter = 0
+          for (const key in greeks) {
+            if (key !== 'Strike') {
+              counter++
+              const data = {
+                labels: strikes,
+                datasets: [{
+                    label: key,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: greeks[key]
+                }]
+              }
+              
+              const config = {
+                  type: 'line',
+                  data: data,
+                  options: { maitainAspectRatio: false }
+              }
+
+              const div = document.createElement('div')
+              const classes = 'col-md-6 offset-md-3 col-sm-12'.split(' ')
+              div.classList.add(...classes)
+              const canvas = document.createElement('canvas')
+              canvas.id = key
+              const chart = new Chart(
+                  canvas,
+                  config
+              )
+
+              div.appendChild(canvas)
+              main.appendChild(canvas)
+
+              if(counter % 3 == 0)
+                div.classList.add('w-100')
+            }
+          }
+        }
+
+        document.getElementById('form').addEventListener('submit', charting(greeks, strikes, main))
+      </script>
+  </body>
+</html>
