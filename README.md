@@ -6,7 +6,7 @@ This a simple web application allowing the user to quickly obtain the price of a
 
 The main script generates a minimal interface to collect and validate user's input and returns a breakdown of the option's price along with its Greeks. It also indicates whether or not the option is over/under-valued according to the model. Finally, the Greeks are plotted for range of -/+20% of stock prices from the current strike.
 
-Website: https://options-price-calculator-jbj0yj8wq-lasource18.vercel.app/
+Website: https://options-price-calculator-kg6d9kzkl-lasource18s-projects.vercel.app/
 
 ## Prerequisites
 
