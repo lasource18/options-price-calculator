@@ -17,13 +17,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/vanilla', methods=['GET'])
-def vanilla():
-    return render_template('vanilla.html')
-
-@app.route('/exotic', methods=['GET'])
-def exotic():
-    return render_template('exotic.html')
+@app.route('/option/<_type>', methods=['GET'])
+def vanilla(_type):
+    return render_template('option.html', _type=_type)
 
 @app.route('/bs', methods=['GET', 'POST'])
 def bs():

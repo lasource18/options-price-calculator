@@ -6,7 +6,7 @@
 #
 
 import math
-from scipy.stats import norm
+from utils import pdf, cdf
 
 class BlackScholesOption(object):
     """
@@ -70,8 +70,8 @@ class BlackScholesOption(object):
             call = max(0.0, self.spot - self.strike)
             call = max(0.0, self.strike - self.spot)
         else:
-            call = self.spot * self._c_ * norm.cdf(self._d1_) - self.strike * self._b_ * norm.cdf(self._d2_)
-            put = self.strike * self._b_ * norm.cdf(-self._d2_) - self.spot * self._c_ * norm.cdf(-self._d1_)
+            call = self.spot * self._c_ * cdf(self._d1_) - self.strike * self._b_ * cdf(self._d2_)
+            put = self.strike * self._b_ * cdf(-self._d2_) - self.spot * self._c_ * cdf(-self._d1_)
 
         return [call, put]
 
@@ -84,8 +84,8 @@ class BlackScholesOption(object):
             put = -1.0 if self.spot < self.strike else 0.0
 
         else:
-            call = self._c_ * norm.cdf(self._d1_)
-            put = -self._c_ * norm.cdf(-self._d1_)
+            call = self._c_ * cdf(self._d1_)
+            put = -self._c_ * cdf(-self._d1_)
 
         return [call, put]
 
@@ -93,7 +93,7 @@ class BlackScholesOption(object):
     @property
     def _gamma(self):
         ''' Returns the option gamma'''
-        return self._c_ * norm.pdf(self._d1_) / (self.spot * self._a_)
+        return self._c_ * pdf(self._d1_) / (self.spot * self._a_)
 
     # Option Vega
     @property
@@ -102,14 +102,14 @@ class BlackScholesOption(object):
         if self.vol == 0 or self.dte == 0:
             return 0.0
         else:
-            return self.spot * self._c_ * norm.pdf(self._d1_) * self.dte**0.5 / 100
+            return self.spot * self._c_ * pdf(self._d1_) * self.dte**0.5 / 100
 
     # Option Theta
     @property
     def _theta(self):
         ''' Returns the option theta: [Call theta, Put theta]'''
-        call =  (-1 * (self._c_ * self.spot * norm.pdf(self._d1_) * self.vol) / (2*self.dte**0.5)) + (self.div * self.spot * self._c_) - (self.rate * self.strike * self._b_ * norm.cdf(self._d2_))
-        put = (-1 * (self._c_ * -self.spot * norm.pdf(self._d1_) * self.vol) / (2*self.dte**0.5)) - (self.div * self.spot * self._c_) + (self.rate * self.strike * self._b_ * norm.cdf(self._d2_))
+        call =  (-1 * (self._c_ * self.spot * pdf(self._d1_) * self.vol) / (2*self.dte**0.5)) + (self.div * self.spot * self._c_) - (self.rate * self.strike * self._b_ * cdf(self._d2_))
+        put = (-1 * (self._c_ * -self.spot * pdf(self._d1_) * self.vol) / (2*self.dte**0.5)) - (self.div * self.spot * self._c_) + (self.rate * self.strike * self._b_ * cdf(self._d2_))
 
         return [call / 365, put / 365]
 
@@ -117,16 +117,16 @@ class BlackScholesOption(object):
     @property
     def _rho(self):
         ''' Returns the option rho: [Call rho, Put rho]'''
-        call = self.strike * self.dte * self._b_ * norm.cdf(self._d2_) / 100
-        put = -self.strike * self.dte * self._b_ * norm.cdf(-self._d2_) / 100
+        call = self.strike * self.dte * self._b_ * cdf(self._d2_) / 100
+        put = -self.strike * self.dte * self._b_ * cdf(-self._d2_) / 100
 
         return [call, put]
 
     @property
     def _div_sens(self):
         ''' Returns the option sensitivity to the dividend yield: [Call div_sens, Put div_sens]'''
-        call = -self.dte * self.spot * self._c_ * norm.cdf(self._d1_)
-        put = self.dte * self.spot * self._c_ * norm.cdf(-self._d1_)
+        call = -self.dte * self.spot * self._c_ * cdf(self._d1_)
+        put = self.dte * self.spot * self._c_ * cdf(-self._d1_)
 
         return [call, put]
 

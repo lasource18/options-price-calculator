@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>{{ _type.capitalize() }} Option</title>
+</head>
+<body>
+    <div class="m-4 pt-2">
+        <a href="/">Back</a>
+    </div>
+  <div class="jumbotron">
+    <h1 class="text-center" id="home">{{ _type.capitalize() }} Option</h1>
+  </div>
+  <div class="container-fluid" id="main">
+    <div class="row">
+      <div class="col text-center">
+        {% if  _type == 'exotic' %}
+            <p>Pick the {{ _type }} option type:</p>
+            <a href="/monte-carlo/asian"><button class="btn btn-secondary btn-block">Asian</button></a>
+            <a href="/monte-carlo/lookback"><button class="btn btn-secondary btn-block">Lookback</button></a>
+        {% else %}
+            <p>Pick the method of calculation:</p>
+            <a href="/fdm"><button class="btn btn-secondary btn-block">Finite Difference Method</button></a>
+            <a href="/bs"><button class="btn btn-secondary btn-block">Black Scholes</button></a>
+            <a href="/monte-carlo/eu"><button class="btn btn-secondary btn-block">Monte-Carlo</button></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

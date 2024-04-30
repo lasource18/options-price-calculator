@@ -1,8 +1,8 @@
 import pandas as pd
-import numpy as np
+import math
 
 def graph(class_name, contract_type, upper_bound, lower_bound, strike, rate, vol, dte, div, market_price):
-    df = pd.DataFrame({'Strike':np.arange(lower_bound, upper_bound)})
+    df = pd.DataFrame({'Strike': list(range(lower_bound, upper_bound))})
     df['Delta'] = df['Gamma'] = df['Vega'] = df['Theta'] = df['Rho'] = 0
 
     for i in range(len(df)):
@@ -36,3 +36,16 @@ def valuation(opt_price, market_price):
         difference = f'The option is overvalued by {abs(price_diff):.2%}.'
 
     return difference
+
+def pdf(x, mean=0, std_dev=1):
+    var = std_dev ** 2
+    coef = 1 / math.sqrt(2 * math.pi * var)
+    exp = -((x - mean) ** 2) / (2 * var)
+    pdf_value = coef * math.exp(exp)
+    return pdf_value
+
+def cdf(x, mu=0, sigma=1):
+    """
+    Calculate the cumulative distribution function (CDF) of the normal distribution.
+    """
+    return (1 + math.erf((x - mu) / (sigma * math.sqrt(2)))) / 2
