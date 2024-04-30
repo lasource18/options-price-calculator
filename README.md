@@ -13,7 +13,6 @@ Website: https://options-price-calculator-jbj0yj8wq-lasource18.vercel.app/
 Before running this application, ensure you have the following installed:
 
 - Python (version 3.x)
-- Flask (install via `pip install flask`)
 
 ## Steps to Run
 
