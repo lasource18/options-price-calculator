@@ -2,29 +2,45 @@
 # coding: utf-8
 # main.py
 
-from options.options import Option
+from options.bs import BlackScholesOption
+from options.monte_carlo import MonteCarloOption
+from options.fdm import EuFdm
 from flask import Flask
 from flask import request, render_template, json
 from werkzeug.exceptions import HTTPException
-import numpy as np
-import pandas as pd
 from datetime import datetime
+from utils import graph, valuation
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
+    return render_template('index.html')
+
+@app.route('/vanilla', methods=['GET'])
+def vanilla():
+    return render_template('vanilla.html')
+
+@app.route('/exotic', methods=['GET'])
+def exotic():
+    return render_template('exotic.html')
+
+@app.route('/bs', methods=['GET', 'POST'])
+def bs():
     if request.method == 'POST':
         contract_type = request.form['contract_type']
         market_price = float(request.form['market_price'])
         spot = float(request.form['stock_price'])
         strike = float(request.form['strike'])
-        dte = (datetime.strptime(request.form['exp'], '%Y-%m-%d') - datetime.today()).days/365
+        dte = (datetime.strptime(request.form['exp'], '%Y-%m-%d') - datetime.today()).days/252
         rate = float(request.form['rf_rate'])
         vol = float(request.form['vol'])
         div = float(request.form['div'])
 
-        option = Option(spot, strike, rate, dte, vol, div)
+        if contract_type == 'C':
+            option = BlackScholesOption(spot, strike, rate, dte, vol, div, mktCallPrice=market_price)
+        else:
+            option = BlackScholesOption(spot, strike, rate, dte, vol, div, mktPutPrice=market_price)
 
         opt_price = round(option.callPrice, 2) if contract_type == 'C' else round(option.putPrice, 2)
         intrinsic_value = round(max(spot - strike, 0), 2) if contract_type == 'C' else round(max(strike - spot, 0), 2)
@@ -36,26 +52,15 @@ def index():
         theta = str(round(option.callTheta, 4)) if contract_type == 'C' else str(round(option.putTheta, 4))
         rho = str(round(option.callRho, 4)) if contract_type == 'C' else str(round(option.putRho, 4))
         div_sens = str(round(option.callDivSens, 4)) if contract_type == 'C' else str(round(option.putDivSens, 4))
+        imp_vol = str(round(option.callImpliedVol(), 2)) if contract_type == 'C' else str(round(option.putImpliedVol(), 2))
 
-        price_diff = (opt_price - market_price) / market_price
+        difference = valuation(opt_price, market_price)
 
-        if price_diff > 0:
-            difference = f'The option is undervalued by {abs(price_diff):.2%}.'
+        data = graph('BlackScholesOption', contract_type, int(spot * 1.2), int(spot * 0.8), strike, rate, vol, dte, div, market_price)
 
-        elif price_diff == 0:
-            difference = f'The option is fairly valued.'
+        # print(data)
 
-        else:
-            difference = f'The option is overvalued by {abs(price_diff):.2%}.'
-
-        opt_price = str(opt_price)
-        intrinsic_value = str(intrinsic_value)
-
-        data = graph(contract_type, int(spot * 1.2), int(spot * 0.8), strike, rate, vol, dte, div)
-
-        print(data)
-
-        return render_template('index.html',
+        return render_template('bs.html',
                                opt_price=opt_price,
                                market_price=market_price,
                                intrinsic_value=intrinsic_value,
@@ -66,12 +71,78 @@ def index():
                                theta=theta,
                                rho=rho,
                                div_sens=div_sens,
+                               imp_vol=imp_vol,
                                difference=difference,
                                data=data
                 )
                                 
     elif request.method == 'GET':
-        return render_template('index.html')
+        return render_template('bs.html')
+    
+@app.route('/fdm', methods=['GET', 'POST'])
+def fdm():
+    if request.method == 'POST':
+        contract_type = request.form['contract_type']
+        market_price = float(request.form['market_price'])
+        spot = float(request.form['stock_price'])
+        strike = float(request.form['strike'])
+        dte = (datetime.strptime(request.form['exp'], '%Y-%m-%d') - datetime.today()).days/252
+        rate = float(request.form['rf_rate'])
+        vol = float(request.form['vol'])
+        steps = int(request.form['steps'])
+
+        if contract_type == 'C':
+            option = EuFdm(strike, vol, rate, dte, steps)
+        else:
+            option = EuFdm(strike, vol, rate, dte, steps)
+
+        opt_price = round(option.callPrice, 2) if contract_type == 'C' else round(option.putPrice, 2)
+        intrinsic_value = round(max(spot - strike, 0), 2) if contract_type == 'C' else round(max(strike - spot, 0), 2)
+        time_value = round(abs(intrinsic_value - opt_price), 2)
+
+        difference = valuation(opt_price, market_price)
+
+        return render_template('fdm.html', 
+                                opt_price=opt_price,
+                                market_price=market_price,
+                                intrinsic_value=intrinsic_value,
+                                time_value=time_value,
+                                difference=difference)
+
+    elif request.method == 'GET':
+        return render_template('fdm.html')
+
+@app.route('/monte-carlo/<category>', methods=['GET', 'POST'])
+def monte_carlo(category):
+    if request.method == 'POST':
+        contract_type = request.form['contract_type']
+        market_price = float(request.form['market_price'])
+        spot = float(request.form['stock_price'])
+        strike = float(request.form['strike'])
+        sigma = float(request.form['sigma'])
+        mu = float(request.form['mu'])
+        horizon = (datetime.strptime(request.form['horizon'], '%Y-%m-%d') - datetime.today()).days/252
+        timesteps = int(request.form['timesteps'])
+        n_sims = int(request.form['n_sims'])
+
+        option = MonteCarloOption(spot, strike, mu, sigma, horizon, timesteps, n_sims, category)
+        print(option.callPrice, option.putPrice)
+        opt_price = round(option.callPrice, 2) if contract_type == 'C' else round(option.putPrice, 2)
+        intrinsic_value = round(max(spot - strike, 0), 2) if contract_type == 'C' else round(max(strike - spot, 0), 2)
+        time_value = round(abs(intrinsic_value - opt_price), 2)
+
+        difference = valuation(opt_price, market_price)
+
+        return render_template('monte_carlo.html', 
+                               opt_price=opt_price,
+                               market_price=market_price,
+                               intrinsic_value=intrinsic_value,
+                               time_value=time_value,
+                               difference=difference,
+                               category=category)
+
+    elif request.method == 'GET':
+        return render_template('monte_carlo.html', category=category)
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -86,29 +157,6 @@ def handle_exception(e):
     })
     response.content_type = "application/json"
     return response   
-
-def graph(contract_type, upper_bound, lower_bound, strike, rate, vol, dte, div):
-    df = pd.DataFrame({'Strike':np.arange(lower_bound, upper_bound)})
-    df['Delta'] = df['Gamma'] = df['Vega'] = df['Theta'] = df['Rho'] = df['Dividend Sensitivity'] = 0
-
-    for i in range(len(df)):
-        option = Option(df.loc[i, 'Strike'], strike, rate, dte, vol, div)
-        if contract_type == 'C':
-            df.loc[i, 'Delta'] = option.callDelta
-            df.loc[i, 'Theta'] = option.callTheta
-            df.loc[i, 'Rho'] = option.callRho
-            df.loc[i, 'Dividend Sensitivity'] = option.callDivSens
-        else:
-            df.loc[i, 'Delta'] = option.putDelta
-            df.loc[i, 'Theta'] = option.putTheta
-            df.loc[i, 'Rho'] = option.putRho
-            df.loc[i, 'Dividend Sensitivity'] = option.putDivSens
-        df.loc[i, 'Gamma'] = option.gamma
-        df.loc[i, 'Vega'] = option.vega
-    
-    d = {key:list(df[key]) for key in df.columns}
-
-    return d
     
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

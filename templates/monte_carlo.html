@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+          <title>Monte-Carlo Option Price Calculator</title>
+    </head>
+    <body>
+        <div class="m-4 pt-2">
+            {%if category == 'eu' %}
+                <a href="/vanilla">Back</a>
+            {% else %}
+                <a href="/exotic">Back</a>
+            {% endif %}
+        </div>
+      <div class="jumbotron">
+          <h1 class="text-center" id="home">Monte-Carlo Option Price Calculator</h1>
+      </div>
+      <div class="container-fluid" id="main">
+        <div class="row">
+          <div class="col-md-6 offset-md-3 col-sm-12">
+                <form action="/monte-carlo/{{ category }}" method="post" class="validate-form" id="form" novalidate>
+                    <div class="form-group">
+                        <span style="display: block;">Contract Type</span>
+                        <input type="radio" name="contract_type" id="call" value="C" checked required>
+                        <label for="call">Call</label>
+                        <input type="radio" name="contract_type" id="put" value="P">
+                        <label for="put">Put</label>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="market_price">Option Market Price (#)</label>
+                        <input type="text" class="form-control" name="market_price" id="market_price" min="0.01" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock_price">Stock Price (#)</label>
+                        <input type="number" class="form-control" name="stock_price" id="stock_price" min="0.01" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="strike">Strike (#)</label>
+                        <input type="number" class="form-control" name="strike" id="strike" min="0.01" required>
+                            <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="horizon">Time Horizon</label>
+                        <input type="date" class="form-control" name="horizon" id="horizon" min="javascript: new Date()" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mu">mu (%)</label>
+                        <!-- <input type="text" class="form-control" name="mu" id="mu" pattern="\\d+\\.?\\d*" required> -->
+                        <input type="number" class="form-control" name="mu" id="mu" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sigma">sigma (%)</label>
+                        <!-- <input type="text" class="form-control" name="vol" id="vol" pattern="\\d+\\.?\\d*" required> -->
+                        <input type="number" class="form-control" name="sigma" id="sigma" min="0" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timesteps">Number of timesteps (#)</label>
+                        <!-- <input type="text" class="form-control" name="vol" id="vol" pattern="\\d+\\.?\\d*" required> -->
+                        <input type="number" class="form-control" name="timesteps" id="timesteps" min="1" max="252" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="n_sims">Number of simulations (#)</label>
+                        <!-- <input type="text" class="form-control" name="vol" id="vol" pattern="\\d+\\.?\\d*" required> -->
+                        <input type="number" class="form-control" name="n_sims" id="n_sims" min="1000" max="100000" required>
+                        <div class="valid-feedback">
+                            Looks Good!
+                        </div>
+                    </div>
+                    <br>
+                    <input type="submit" class="btn btn-primary btn-block" name="submit" value="Calculate">
+                </form>
+                <br>
+                <div id="results">
+                    <h3>Results</h3>
+                    <h5>Price Breakdown</h5>
+                    <p>Option Price: {{ opt_price }}</p>
+                    <p>Market Price: {{ market_price }}</p>
+                    <p>Intrinsic Value: {{ intrinsic_value }}</p>
+                    <p>Time Value: {{ time_value }}</p>
+                    <br>
+                    <h5>Valuation</h5>
+                    <p>{{ difference }}</p>
+                </div>
+            </div>
+        </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script src="{{ url_for('static', filename='js/validateForm.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/appendResults.js') }}"></script>
+  </body>
+</html>

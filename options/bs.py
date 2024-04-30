@@ -2,37 +2,41 @@
 # Simple class to create a template to model European option contracts
 # Author: Claude-Micael Guinan
 # Date: 2021-10-12
+# Last update: 2024-04-12
 #
 
 import math
 from scipy.stats import norm
 
-class Option:
+class BlackScholesOption(object):
     """
-        This is a class for Options contract for pricing European options on stocks without dividends.
+        This class abstracts Vanilla European options on stocks with dividends.
+        It computes the price of the put and the call price for a specific strike,
+        using the Black-Scholes model. 
+
         Attributes:
-        spot : int or float
-        strike : int or float
-        rate : float
-        dte : int or float [days to expiration in number of years]
-        vol : float
-        div : float
+        spot : int|float [underlying asset current price]
+        strike : int|float [strike price]
+        rate : int|float [interest rate]
+        dte : int|float [days to expiry in number of years]
+        vol : int|float [underlying asset volatility]
+        div : int|float [underlying asset dividend yield]
+        mktCallPrice : int|float|None [market price of the call]
+        mktPutPrice : int|float|None [market price of the put]
     """
-    def __init__(self, spot, strike, rate, dte, vol, div):
-        # Spot Price
+    def __init__(self, spot, strike, rate, dte, vol, div=0, mktCallPrice=None, mktPutPrice=None):
         self.spot = spot
-        # Option Strike
         self.strike = strike
-        #Interest rate
-        self.rate = rate / 100
-        # Days To Expiry
-        self.dte = dte
-        # Volatility
-        self.vol = vol / 100
-        # Dividend
-        self.div = div / 100
+        self.rate = round(rate / 100, 4)
+        self.dte = round(dte, 4)
+        self.vol = round(vol / 100, 4)
+        self.div = round(div / 100, 4)
         # Utility
         self._a_ = self.vol * self.dte ** 0.5
+        # Call Option market price
+        self.mktCallPrice = mktCallPrice
+        # Put Option market price
+        self.mktPutPrice = mktPutPrice
         
         if self.strike == 0:
             raise ZeroDivisionError('The strike price cannot be zero')
@@ -47,7 +51,7 @@ class Option:
         '''
             Contains all the attributes defined for the object itself. It maps the attribute name to its value
         '''
-        for i in ['callPrice', 'putPrice', 'callDelta', 'putDelta', 'callTheta', 'putTheta', 'callRho', 'putRho', 'vega', 'gamma']:
+        for i in ['callPrice', 'putPrice', 'callDelta', 'putDelta', 'callTheta', 'putTheta', 'callRho', 'putRho', 'callDivSens','putDivSens', 'vega', 'gamma']:
             self.__dict__[i] = None
             
             [self.callPrice, self.putPrice] = self._price
@@ -81,7 +85,7 @@ class Option:
 
         else:
             call = self._c_ * norm.cdf(self._d1_)
-            put = - self._c_ * norm.cdf(-self._d1_)
+            put = -self._c_ * norm.cdf(-self._d1_)
 
         return [call, put]
 
@@ -125,4 +129,46 @@ class Option:
         put = self.dte * self.spot * self._c_ * norm.cdf(-self._d1_)
 
         return [call, put]
+
+    def callImpliedVol(self):
+        '''Derive the implied volatility for calls using the bisection method'''
+        if self.mktCallPrice is None:
+            return self.vol
+        else:
+            iv = self._bisection_iv(_type='call')
+            return iv
+    
+    def putImpliedVol(self):
+        '''Derive the implied volatility for puts using the bisection method'''
+        if self.mktPutPrice is None:
+            return self.vol
+        else:
+            iv = self._bisection_iv(_type='put')
+            return iv
+    
+    def _bisection_iv(self, high=500.0, low=0.0, tolerance=1e-7, _type='call'):
+        for i in range(1000):
+            mid = (high+low) / 2
+            if mid < tolerance:
+                mid = tolerance
+
+            if _type == 'call':
+                price = self.mktCallPrice
+                estimate = eval(self.__class__.__name__)(self.spot, self.strike, self.rate, self.dte, mid, self.div).callPrice
+            
+            if _type == 'put':
+                price = self.mktPutPrice
+                estimate = eval(self.__class__.__name__)(self.spot, self.strike, self.rate, self.dte, mid, self.div).putPrice
+            
+            if round(estimate, 6) == price:
+                break
+            elif estimate > price:
+                high = mid
+            elif estimate < price:
+                low = mid
+                
+        return mid
+    
+    def __str__(self) -> str:
+        return f'Option[Spot={self.spot}, Strike={self.strike}, Rate={self.rate}, DTE={self.dte}, Vol={self.vol}, Div={self.div}, MktCallPrice={self.mktCallPrice}, MktPutPrice={self.mktPutPrice}]'
 
